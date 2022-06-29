@@ -32,14 +32,7 @@ export const Login = () => {
               value={password}
             />
           </div>
-          <div className="mb-3 form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id="exampleCheck1"
-            />
-            <label className="form-check-label">Check me out</label>
-          </div>
+
           <div className="d-flex justify-content-center mb-2">
             <button
               type="submit"
