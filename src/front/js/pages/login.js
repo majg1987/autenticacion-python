@@ -1,19 +1,27 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 import { Context } from "../store/appContext";
 
 export const Login = () => {
-  const { actions, store } = useContext(Context);
+  const { store, actions } = useContext(Context);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    actions.login(email, password);
+  };
+
   return (
     <>
+      store.auth ? <Navigate to="/home" />:
       <div className="container pt-5">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label forhtml="labelEmail" className="form-label">
+              Email
+            </label>
             <input
               type="email"
               className="form-control"
@@ -23,7 +31,9 @@ export const Login = () => {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label forhtml="labelPassword" className="form-label">
+              Password
+            </label>
             <input
               type="password"
               className="form-control"
@@ -34,11 +44,7 @@ export const Login = () => {
           </div>
 
           <div className="d-flex justify-content-center mb-2">
-            <button
-              type="submit"
-              className="btn btn-primary w-100"
-              onClick={actions.login(email, password)}
-            >
+            <button type="submit" className="btn btn-primary w-100">
               Acceder
             </button>
           </div>

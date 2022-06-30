@@ -35,7 +35,7 @@ db.init_app(app)
 CORS(app)
 
 # Setup the Flask-JWT-Extended extension
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_Secret_Key')  # Change this!
 jwt = JWTManager(app)
 
 # add the admin

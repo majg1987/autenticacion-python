@@ -9,7 +9,6 @@ import json
 
 api = Blueprint('api', __name__)
 
-
 # @api.route('/hello', methods=['POST', 'GET'])
 # def handle_hello():
 
@@ -18,6 +17,7 @@ api = Blueprint('api', __name__)
 #     }
 
 #     return jsonify(response_body), 200
+
 @api.route("/registro", methods=["POST"])
 def registro():
     body = json.loads(request.data) 
