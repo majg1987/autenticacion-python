@@ -36,6 +36,7 @@ def registro():
 def login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
+    user = User.query.filter_by(email = email).first()
     if email != user.email or password != user.password:
         return jsonify({"msg": "Bad username or password"}), 401
 
@@ -49,7 +50,8 @@ def login():
 def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    user = User.query.filter_by(email = current_user).first()
+    return jsonify(user.serialize()), 200
 
 
 if __name__ == "__main__":
