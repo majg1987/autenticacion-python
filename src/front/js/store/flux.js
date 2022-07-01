@@ -12,7 +12,7 @@ const getState = ({
             registro: (email, password, repeat) => {
                 try {
                     // fetching data from the backend
-                    if (password === repeat) {
+                    if (password === repeat && email && password) {
                         fetch(process.env.BACKEND_URL + "/api/registro", {
                             method: "POST",
                             body: JSON.stringify({
