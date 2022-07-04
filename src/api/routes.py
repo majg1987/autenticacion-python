@@ -6,6 +6,8 @@ from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 import json
+# from flask_bcrypt import Bcrypt
+
 
 api = Blueprint('api', __name__)
 
@@ -21,6 +23,10 @@ api = Blueprint('api', __name__)
 @api.route("/registro", methods=["POST"])
 def registro():
     body = json.loads(request.data) 
+    #llamas de current_app la propiedad bcrypt que agregaste en app.py
+    # hashed_password = current_app.bcrypt.generate_password_hash(body["password"]).decode('utf-8')
+    # print(hashed_password)
+    
     user = User(email = body["email"], password = body["password"])
     print(user)
     db.session.add(user)
