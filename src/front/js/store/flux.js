@@ -10,61 +10,67 @@ const getState = ({
         },
         actions: {
             // Registro
-            registro: (email, password, repeat) => {
-                try {
-                    // fetching data from the backend
-                    if (password === repeat && email && password) {
-                        fetch(process.env.BACKEND_URL + "/api/registro", {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    "email": email,
-                                    "password": password
-                                }),
-                                headers: {
-                                    "Content-Type": "application/json"
-                                }
-                            })
-                            .then((response) => {
-                                if (response.status === 200) {
-                                    setStore({
-                                        registro: true
-                                    })
-                                }
-                                response.json()
-                                setStore({
-                                    registro: false
-                                })
-                            })
+            registro: async (email, password, repeat) => {
+
+                // fetching data from the backend
+                if (password === repeat && email && password) {
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            "email": email,
+                            "password": password
+                        }),
                     }
-                } catch (error) {
-                    console.log("Error loading message from backend", error)
+                    try {
+                        const res = await fetch(process.env.BACKEND_URL + "/api/registro", options);
+                        if (res.status === 200) {
+                            alert("Registro completado")
+                            setStore({
+                                registro: true
+                            })
+                        }
+                        const data = await res.json()
+                        setStore({
+                            registro: false
+                        })
+                    } catch (error) {
+                        console.log("Error loading message from backend", error)
+                        alert("Registro fallido")
+                    }
                 }
             },
+
             // Fetch para Login
-            login: (email, password) => {
+            login: async (email, password) => {
                 if (email !== "" && password != "") {
+                    const options = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            "email": email,
+                            "password": password
+                        }),
+                    };
+
                     try {
                         // fetching data from the backend
-                        fetch(process.env.BACKEND_URL + "/api/login", {
-                                method: "POST",
-                                body: JSON.stringify({
-                                    "email": email,
-                                    "password": password
-                                }),
-                                headers: {
-                                    "Content-Type": "application/json"
-                                }
+                        const res = await fetch(process.env.BACKEND_URL + "/api/login", options);
+                        if (res.status === 200) {
+                            setStore({
+                                auth: true
                             })
-                            .then((response) => {
-                                if (response.status === 200) {
-                                    setStore({
-                                        auth: true
-                                    })
-                                }
-                                response.json();
-                            })
-                            .then((data) => localStorage.setItem("token", data.access_token))
-                        // don't forget to return something, that is how the async resolves
+                        } else if (res.status === 401) {
+                            alert("Usuario o Password erroneos")
+                        }
+
+                        const data = await res.json();
+                        console.log(data);
+                        localStorage.setItem("token", data.token)
                     } catch (error) {
                         console.log("Error loading message from backend", error)
                     }
@@ -74,7 +80,6 @@ const getState = ({
 
             // Cerrar sesion
             logout: () => {
-
                 localStorage.removeItem("token");
                 setStore({
                     auth: false

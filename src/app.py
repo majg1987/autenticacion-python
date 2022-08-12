@@ -11,7 +11,7 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import (JWTManager, jwt_required, create_access_token, get_jwt_identity)
 from flask_bcrypt import Bcrypt
 
 #from models import Person
@@ -45,7 +45,12 @@ CORS(app)
 app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_Secret_Key')  # Change this!
 jwt = JWTManager(app)
 
-
+#configuración de bcrypt
+#Le agregamos al objeto app la propiedad bcrypt para que se pueda
+#consumir en cualquier archivo de la app a traves de current_app la configuración que hicimos
+bcrypt = Bcrypt(app)
+print(bcrypt)
+app.bcrypt = bcrypt
 
 # add the admin
 setup_admin(app)

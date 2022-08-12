@@ -1,11 +1,11 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, current_app
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
-import json
+import json, bcrypt
 # from flask_bcrypt import Bcrypt
 
 
@@ -24,15 +24,15 @@ api = Blueprint('api', __name__)
 def registro():
     body = json.loads(request.data) 
     #llamas de current_app la propiedad bcrypt que agregaste en app.py
-    # hashed_password = current_app.bcrypt.generate_password_hash(body["password"]).decode('utf-8')
-    # print(hashed_password)
+    hashed_password = current_app.bcrypt.generate_password_hash(body["password"]).decode('utf-8')
+    print(hashed_password)
     
-    user = User(email = body["email"], password = body["password"])
+    user = User(email = body["email"], password = hashed_password)
     print(user)
     db.session.add(user)
     db.session.commit()
     response_body = {
-        "results": "Favorito añadido correctamente"
+        "results": "Usuario añadido correctamente"
     }
     return jsonify(response_body), 200
 
@@ -40,14 +40,17 @@ def registro():
 # create_access_token() function is used to actually generate the JWT.
 @api.route("/login", methods=["POST"])
 def login():
+    # almacenamos la solicitud JSON obtenida de email y password
     email = request.json.get("email", None)
     password = request.json.get("password", None)
+    # almacenamos la primera coincidencia de email en User
     user = User.query.filter_by(email = email).first()
+    # Si el email o password no coindicen retornamos error de autentificacion
     if email != user.email or password != user.password:
-        return jsonify({"msg": "Bad username or password"}), 401
+        if email != user.email or not current_app.bcrypt.check_password_hash(user.password, password):
+            return jsonify({"msg": "Bad username or password"}), 401
 
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+    return jsonify({"token": create_access_token(identity=email)})
 
 # Protect a route with jwt_required, which will kick out requests
 # without a valid JWT present.
